@@ -3,13 +3,12 @@
 </template>
 
 <script lang="ts">
-import { ref, onBeforeMount, nextTick } from 'vue';
+import { ref, onBeforeMount, nextTick, inject } from 'vue';
 import * as THREE from 'three';
-// import { loadGroundObject } from '../TSFiles/addObjects';
-// import { loadColliders } from '../TSFiles/addColliders'
-// import { loadTriggers } from '../TSFiles/addTriggers'
-// import { CameraControls } from '../TSFiles/cameraControls';
-
+import { loadGroundObject } from '../TSFiles/addObjects';
+import { CameraControls } from '../TSFiles/cameraControls';
+import { loadColliders } from '../TSFiles/addColliders'
+import { loadTriggers } from '../TSFiles/addTriggers'
 // import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
 // const boundingBox = new THREE.Box3();
@@ -22,9 +21,8 @@ export default {
 
   setup() {
     const canvasRef = ref<HTMLElement>(null!);
-    // const openModal = inject('openModal') as () => void;
-    // const closeModal = inject('closeModal') as () => void;
-    // const component = this;
+    const openModal = inject('openModal') as () => void;
+    const closeModal = inject('closeModal') as () => void;
     console.log("Scene.vue 1");
 
     onBeforeMount(async () => {
@@ -55,31 +53,43 @@ export default {
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
         scene.add(ambientLight);
 
-        const cubeGeometry = new THREE.BoxGeometry(5, 5, 5);
+        const cubeGeometry = new THREE.BoxGeometry(1, 2, 1);
         const cubeMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
         const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
-        cube.position.y= 1;
-        cube.rotateX(10);
+        cube.position.y = 1;
         scene.add(cube);
+
+        // const cubeGeometry = new THREE.BoxGeometry(5, 5, 5);
+        // const cubeMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+        // const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+        // cube.position.y= 1;
+        // cube.rotateX(10);
+        // scene.add(cube);
+
+        // const loader = new GLTFLoader();
+        // loader.load('obj3d/buildingLight.gltf', function(gltf: { scene: any; }) {
+        //   const object = gltf.scene;
+        //   scene.add(object);
+        // });
 
         // Ajoutez votre code de scène ici
 
         async function main() {
-          // await loadGroundObject(scene, openModal, closeModal);
-          // loadColliders(scene);
-          // loadTriggers(scene);
+          await loadGroundObject(scene, openModal, closeModal);
+          loadTriggers(scene);
+          loadColliders(scene);
           // emit('loading', false);  // Émet un événement lorsque le chargement est terminé
         }
 
         main();
 
-        // const cameraControls = new CameraControls(camera, canvasRef.value, cube);
+        const cameraControls = new CameraControls(camera, canvasRef.value, cube);
 
         // Fonction de rendu de la scène
         const animate = () => {
           requestAnimationFrame(animate);
-          cube.rotateY(0.01);
-          // cameraControls.update(0.008);
+          // cube.rotateY(0.01);
+          cameraControls.update(0.008);
           renderer.render(scene, camera);
         };
         animate();
