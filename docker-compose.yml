@@ -1,0 +1,30 @@
+version: "3"
+services:
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "80:80"
+
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      - db
+
+  db:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_USER: your_postgres_username
+      POSTGRES_PASSWORD: your_postgres_password
+      POSTGRES_DB: your_database_name
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
